@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  diagnoseme-frontend :
+    container_name: diagnoseme-frontend 
+    build: .
+    ports:
+      - "3000:80"

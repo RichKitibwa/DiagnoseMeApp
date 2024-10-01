@@ -1,0 +1,28 @@
+services:
+  # diagnoseme-backend:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/app  
+      
+  db:
+    image: postgres:13-alpine
+    ports:
+      - "5435:5432"
+    env_file:
+    - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+
+volumes:
+  postgres_data:
