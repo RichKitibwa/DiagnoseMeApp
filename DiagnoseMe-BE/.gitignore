@@ -4,3 +4,6 @@ DM-BE-env/
 diagnoseme-be.pem
 __pycache__/
 .terraform/
+*.tfstate
+*.tfstate.*
+*.exe
