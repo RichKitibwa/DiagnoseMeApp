@@ -2,6 +2,7 @@
   "name": "diagnoseme-ui",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://github.com/RichKitibwa/DiagnoseMeApp",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -47,4 +48,5 @@
       "last 1 safari version"
     ]
   }
+  
 }
