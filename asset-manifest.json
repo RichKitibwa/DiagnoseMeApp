@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/RichKitibwa/DiagnoseMeApp/static/css/main.94539163.css",
-    "main.js": "/RichKitibwa/DiagnoseMeApp/static/js/main.5253ae12.js",
-    "static/js/787.97bc2023.chunk.js": "/RichKitibwa/DiagnoseMeApp/static/js/787.97bc2023.chunk.js",
-    "static/media/patient_satisfaction.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/patient_satisfaction.d66d0a45ccb57d5eecd2.jpg",
-    "static/media/using_ai.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/using_ai.f43e8920d4eaf5e47fed.jpg",
-    "static/media/save_time.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/save_time.b56a0d2a5cfc3cc1d761.jpg",
-    "static/media/confirm_treat.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/confirm_treat.77e5781adf1b43518036.jpg",
-    "static/media/enter_patient_data.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/enter_patient_data.4e8db1fe976b197bd590.jpg",
-    "static/media/get_diagnosis.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/get_diagnosis.03d96bd91601b2f356e7.jpg",
-    "static/media/bg_image.jpg": "/RichKitibwa/DiagnoseMeApp/static/media/bg_image.c8c8d24a6f9daaf150e7.jpg",
-    "index.html": "/RichKitibwa/DiagnoseMeApp/index.html",
-    "main.94539163.css.map": "/RichKitibwa/DiagnoseMeApp/static/css/main.94539163.css.map",
-    "main.5253ae12.js.map": "/RichKitibwa/DiagnoseMeApp/static/js/main.5253ae12.js.map",
-    "787.97bc2023.chunk.js.map": "/RichKitibwa/DiagnoseMeApp/static/js/787.97bc2023.chunk.js.map"
+    "main.css": "/static/css/main.378c57e4.css",
+    "main.js": "/static/js/main.2c1c5035.js",
+    "static/js/787.97bc2023.chunk.js": "/static/js/787.97bc2023.chunk.js",
+    "static/media/patient_satisfaction.jpg": "/static/media/patient_satisfaction.d66d0a45ccb57d5eecd2.jpg",
+    "static/media/using_ai.jpg": "/static/media/using_ai.f43e8920d4eaf5e47fed.jpg",
+    "static/media/save_time.jpg": "/static/media/save_time.b56a0d2a5cfc3cc1d761.jpg",
+    "static/media/confirm_treat.jpg": "/static/media/confirm_treat.77e5781adf1b43518036.jpg",
+    "static/media/enter_patient_data.jpg": "/static/media/enter_patient_data.4e8db1fe976b197bd590.jpg",
+    "static/media/get_diagnosis.jpg": "/static/media/get_diagnosis.03d96bd91601b2f356e7.jpg",
+    "static/media/bg_image.jpg": "/static/media/bg_image.c8c8d24a6f9daaf150e7.jpg",
+    "index.html": "/index.html",
+    "main.378c57e4.css.map": "/static/css/main.378c57e4.css.map",
+    "main.2c1c5035.js.map": "/static/js/main.2c1c5035.js.map",
+    "787.97bc2023.chunk.js.map": "/static/js/787.97bc2023.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.94539163.css",
-    "static/js/main.5253ae12.js"
+    "static/css/main.378c57e4.css",
+    "static/js/main.2c1c5035.js"
   ]
 }
