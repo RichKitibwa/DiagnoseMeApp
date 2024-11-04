@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+# slack webhook
 
 def send_slack_notification(message):
     http = urllib3.PoolManager()
