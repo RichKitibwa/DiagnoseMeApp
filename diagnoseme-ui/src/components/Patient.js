@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, TextField, Button, Box } from '@mui/material';
+import { Card, CardContent, Typography, TextField, Button, Box, Divider, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import {calculateAge} from '../utils/CalculateAge';
 import CircularProgress from '@mui/material/CircularProgress';
+import SendIcon from "@mui/icons-material/Send";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { Col, Container, Row } from 'react-bootstrap';
 import DoctorSideNav from './DoctorSideNav';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import formatResponse from '../utils/formatResponse';
 import '../App.css';
 
 const Patient = () => {
     const { patientId } = useParams();
     const [patientDetails, setPatientDetails] = useState({});
-    const [clinicalNotes, setClinicalNotes] = useState('');
-    const [medGptSuggestions, setMedGptSuggestions] = useState('');
+    const [chatHistory, setChatHistory] = useState([]);
+    const [currentInput, setCurrentInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -21,13 +23,13 @@ const Patient = () => {
         const fetchPatientDetails = async () => {
             try {
                 const token = localStorage.getItem('jwtToken');
-                const response = await axios.get(`/api/patient/${patientId}`, {
+                const response = await axios.get(`/patients/patient/${patientId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 const patientData = response.data;
-                patientData.age =  calculateAge(patientData.dateOfBirth);
+                patientData.age =  calculateAge(patientData.date_of_birth);
                 setPatientDetails(patientData);
             } catch (error) {
                 console.error('Error fetching patient details', error);
@@ -37,50 +39,48 @@ const Patient = () => {
         fetchPatientDetails();
     }, [patientId]);
 
-    const handleGenerateDiagnosis = async () => {
+    const handleSendMessage = async () => {
+        if (!currentInput.trim()) return;
+    
         try {
-            setIsLoading(true);
-            const token = localStorage.getItem('jwtToken');
-            const {dateOfBirth, gender, allergies, chronicIllnesses} = patientDetails;
-
-            const patientInfo = {
-                dateOfBirth,
-                gender,
-                allergies,
-                chronicIllnesses
-            };
-
-            const response = await axios.post('/api/generate-diagnosis', {
-                patientId,
-                patientInfo,
-                clinicalNotes
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setMedGptSuggestions(response.data);
-            setClinicalNotes('');
+          setIsLoading(true);
+          const token = localStorage.getItem("jwtToken");
+          const formattedChatHistory = chatHistory
+            .map((chat) => `${chat.user}: ${chat.message}`)
+            .join("\n");
+    
+          const response = await axios.post(
+            "/diagnosis/diagnose",
+            {
+              query: currentInput,
+              patient_data: {
+                gender: patientDetails.gender,
+                date_of_birth: patientDetails.date_of_birth,
+                allergies: patientDetails.allergies || "None",
+                chronic_illnesses: patientDetails.chronic_illnesses || "None",
+              },
+              chat_history: formattedChatHistory,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+    
+          const newMessage = {
+            user: "Doctor",
+            message: currentInput,
+          };
+    
+          const modelResponse = {
+            user: "Model",
+            message: response.data.model_response,
+          };
+    
+          setChatHistory((prev) => [...prev, newMessage, modelResponse]);
+          setCurrentInput("");
         } catch (error) {
-            console.log('Error Generating Diagnosis', error);
+          console.error("Error generating diagnosis", error);
         } finally {
-            setIsLoading(false);
+          setIsLoading(false);
         }
-    }; 
-
-    const handleImageChange = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            setSelectedImage(event.target.files[0]);
-        }
-    };
-
-    const handleSubmit = () => {
-
-    };
-
-    const handleClear = () => {
-        setClinicalNotes('');
-        setMedGptSuggestions('');
     };
 
     return (
@@ -91,64 +91,154 @@ const Patient = () => {
                 </Col>
                 <Col  md={9} lg={10} className="">
                     <Box sx={{ margin: 2 }}>
-                        <Typography variant="h5" gutterBottom>
-                            Patient Details
-                        </Typography>
-                        <Typography variant="subtitle1">
-                            Name: {patientDetails.username} - Age: {patientDetails.age} - Gender: {patientDetails.gender} -  
-                            Allergies: {patientDetails.allergies}
-                        </Typography>
-
-                        <Card variant="outlined" sx={{ marginTop: 2 }}>
+                        <Card variant="outlined" sx={{ marginBottom: 2 }}>
                             <CardContent>
-                                <label htmlFor="raised-button-file" style={{ marginBottom: '16px', display: 'block' }}>
-                                    <Button variant="contained" color="primary" component="span" startIcon={<PhotoCamera />}>
-                                        Upload Images
-                                    </Button>
-                                </label>
-                                <input
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    id="raised-button-file"
-                                    multiple
-                                    type="file"
-                                    onChange={handleImageChange}
-                                />  
+                                <Typography variant="h5">Patient Details</Typography>
+                                <Divider sx={{ marginY: 2 }} />
+                                <Typography variant="body1">
+                                <strong>Name:</strong> {patientDetails.username}
+                                </Typography>
+                                <Typography variant="body1">
+                                <strong>Age:</strong> {patientDetails.age || "N/A"}
+                                </Typography>
+                                <Typography variant="body1">
+                                <strong>Gender:</strong> {patientDetails.gender || "N/A"}
+                                </Typography>
+                                <Typography variant="body1">
+                                <strong>Allergies:</strong> {patientDetails.allergies || "None"}
+                                </Typography>
+                                <Typography variant="body1">
+                                <strong>Chronic Illnesses:</strong> {patientDetails.chronic_illnesses || "None"}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Box>    
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                height: "100vh",
+                                overflow: "hidden",
+                            }}
+                            >
+                            <Box
+                                sx={{
+                                flexGrow: 1,
+                                overflowY: "auto",
+                                padding: "20px",
+                                marginBottom: "80px",
+                                }}
+                            >
+                                {chatHistory.map((chat, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: chat.user === "Doctor" ? "flex-end" : "flex-start",
+                                        marginBottom: 2,
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            maxWidth: "70%",
+                                            padding: 2,
+                                            borderRadius: 10,
+                                            backgroundColor:
+                                            chat.user === "Doctor" ? "#e0f7fa" : "#f5f5f5",
+                                            boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
+                                        }}
+                                    >
+                                    <Typography
+                                            variant="body2"
+                                            sx={{
+                                            fontWeight: "bold",
+                                            color: chat.user === "Doctor" ? "#00796b" : "#000",
+                                            marginBottom: 1,
+                                            }}
+                                        >
+                                            {chat.user}
+                                        </Typography>
+                                        {chat.user === "Model" ? (
+                                            formatResponse(chat.message)
+                                        ) : (
+                                            <Typography variant="body1">{chat.message}</Typography>
+                                        )}
+                                    </Box>
+                                </Box>
+                                ))}
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    position: "fixed",
+                                    bottom: 40,
+                                    left: "50%",
+                                    transform: "translateX(-50%)",
+                                    width: "70%",
+                                    maxWidth: "900px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    backgroundColor: "#f5f5f5",
+                                    borderRadius: 30,
+                                    padding: "5px 15px",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                    zIndex: 2,
+                                }}
+                            >
+                                <IconButton color="primary" component="label">
+                                    <PhotoCamera />
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(event) => console.log(event.target.files[0])}
+                                    />
+                                </IconButton>
+
                                 <TextField
-                                    label="Clinical Notes"
+                                    placeholder="Enter clinical notes or questions"
                                     multiline
-                                    rows={6}
+                                    maxRows={5}
                                     fullWidth
-                                    value={clinicalNotes}
-                                    onChange={(e) => setClinicalNotes(e.target.value)}
-                                    variant="outlined"
-                                    margin="normal" 
+                                    value={currentInput}
+                                    onChange={(e) => setCurrentInput(e.target.value)}
+                                    disabled={isLoading}
+                                    sx={{
+                                        backgroundColor: "transparent",
+                                        flexGrow: 1,
+                                        fontSize: "16px",
+                                        border: "none",
+                                        outline: "none",
+                                        padding: "5px 0",
+                                    }}
+                                    InputProps={{
+                                        disableUnderline: true,
+                                    }}
                                 />
 
-                                <Button variant="contained" color="primary" onClick={handleGenerateDiagnosis} disabled={isLoading}>
-                                    {isLoading ? <CircularProgress size={24} /> : "Generate Preliminary Diagnosis"}
-                                </Button>
-                                {selectedImage && <span style={{ marginTop: 8 }}>{selectedImage.name}</span>}
-                            </CardContent>
-                        </Card>
+                                <IconButton
+                                    color="primary"
+                                    onClick={handleSendMessage}
+                                    disabled={isLoading} 
+                                >
+                                    {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                                </IconButton>
+                            </Box>
 
-                        <Card variant="outlined" sx={{ marginTop: 2 }}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom>
-                                    Suggestions
-                                </Typography>
-                                <Typography variant="body1">{medGptSuggestions || 'No suggestions yet.'}</Typography>
-                            </CardContent>
-                        </Card>
-
-                        <Box sx={{ marginTop: 2, display: 'flex', gap: 2 }}>
-                            <Button variant="contained" color="primary" onClick={handleSubmit}>
-                                Submit
-                            </Button>
-                            <Button variant="outlined" onClick={handleClear}>
-                                Clear
-                            </Button>
-                        </Box>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                position: "fixed",
+                                bottom: 0,
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                color: "gray",
+                                textAlign: "center",
+                                paddingBottom: "10px",
+                                }}
+                            >
+                                This assessment is to support, not replace, the doctor's clinical judgment.
+                            </Typography>     
                     </Box>
                 </Col>
             </Row>

@@ -21,14 +21,16 @@ const DoctorHome = () => {
     const fetchPatientCount = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
-        const response = await axios.get('/api/patients/count', {
+        const response = await axios.get('/patients/get_patients', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        setPatientCount(response.data.patientCount);
+        const count = response.data?.length || 0;
+        setPatientCount(count);
       } catch (error) {
         console.error('Failed to fetch patient count', error);
+        setPatientCount(0);
       }
     };
 

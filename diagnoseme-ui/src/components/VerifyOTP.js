@@ -12,10 +12,17 @@ const VerifyOTP = ({ handleLogin }) => {
     const userId = location.state.userId;
     const role = location.state.role;
 
-    const handleOTPVerification = async () => {
-        try {
+    const [isLoading, setIsLoading] = useState(false);
 
+    const handleOTPVerification = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            console.log("Verifying with:", { userId, otp, role }); 
             const response = await axios.post('/auth/verify-otp', {user_id: userId, otp, role});
+
+            console.log("Verify OTP response:", response.data);
 
             const userStatus = response.data.status;
             const message = response.data.message;
@@ -37,6 +44,8 @@ const VerifyOTP = ({ handleLogin }) => {
         } catch(error) {
             console.log("role", role);
             setError('Invalid OTP');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -62,7 +71,9 @@ const VerifyOTP = ({ handleLogin }) => {
                                         onChange={(e) => setOTP(e.target.value)}
                                     />
                                 </div>    
-                                <button type="button" className="btn btn-primary w-100" onClick={handleOTPVerification}>Verify</button>
+                                <button type="button" className="btn btn-primary w-100" disabled={isLoading}onClick={handleOTPVerification}>
+                                    {isLoading ? 'Verifying OTP...' : 'Verify OTP'}
+                                </button>
                                 {error && <div className='error'>{error}</div>}
                             </form>
                         </div>

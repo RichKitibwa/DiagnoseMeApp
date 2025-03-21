@@ -23,7 +23,7 @@ const ExisitingPatients = () => {
             setIsLoading(true);
             try {
                 const token = localStorage.getItem('jwtToken');
-                const response = await axios.get('/api/patients', {
+                const response = await axios.get('/patients/get_patients', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -32,6 +32,7 @@ const ExisitingPatients = () => {
                 setPatients(response.data);
                 } catch (error) {
                     console.error('Error fetching patients', error);
+                    setPatients([]);
                 } finally {
                     setIsLoading(false);
             }

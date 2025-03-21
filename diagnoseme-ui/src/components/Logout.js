@@ -8,9 +8,7 @@ const LogoutButton = ({ handleLogout }) => {
 
   const handleLogoutClick = async () => {
     try {
-      const response = await axios.post('/api/auth/logout');
-
-      console.log(response.data);
+      localStorage.removeItem('token');
       handleLogout();
       navigate('/');
     } catch (error) {

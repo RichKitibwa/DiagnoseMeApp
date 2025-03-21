@@ -2,7 +2,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app import models, schemas, auth
+from app.models import User
 import uuid
+from uuid import UUID
+
 
 async def get_user_by_email(db: Session, email: str):
     result = await db.execute(select(models.User).where(models.User.email == email))
@@ -16,49 +19,56 @@ async def get_user(db: AsyncSession, user_id: uuid.UUID):
     result = await db.execute(select(models.User).where(models.User.id == user_id))
     return result.scalars().first()
 
+async def get_user_by_id(db: AsyncSession, user_id: uuid.UUID):
+    result = await db.execute(select(models.User).where(models.User.id == user_id))
+    return result.scalars().first()
+
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
     hashed_password = auth.get_password_hash(user.password)
     db_user = models.User(
+        **user.dict(exclude={"password", "clinic", "location"}),
         id=uuid.uuid4(),
-        username=user.username,
-        email=user.email,
         hashed_password=hashed_password,
-        user_role=user.user_role,
-        registration_number=user.registration_number,
+        created_by="SELF",
+        updated_by="SELF",
     )
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-
+    print(f"User created: {db_user}")
     return db_user
 
-async def create_organisation(db: AsyncSession, organisation: schemas.OrganisationCreate):
+async def create_organisation(db: AsyncSession, organisation: schemas.OrganisationCreate, created_by: str):
     db_organisation = models.Organisation(
-        id=uuid.uuid4(),
-        clinic_name=organisation.clinic_name,
-        location=organisation.location,
-        user_id=organisation.user_id,
+        **organisation.dict(),
+        created_by=created_by,
+        updated_by=created_by,
     )
     db.add(db_organisation)
     await db.commit()
     await db.refresh(db_organisation)
-    return db_organisation
+    return db_organisation  
 
-async def create_organisation_user(db: AsyncSession, organisation_user: schemas.OrganisationUserCreate):
+async def create_organisation_user(db: AsyncSession, organisation_user: schemas.OrganisationUserCreate, created_by: str):
     db_organisation_user = models.OrganisationUser(
-        id=uuid.uuid4(),
-        organisation_id=organisation_user.organisation_id,
-        user_id=organisation_user.user_id,
-        user_role=organisation_user.user_role,
+        **organisation_user.dict(),
+        created_by=created_by,
+        updated_by=created_by,
     )
+    print(f"Creating organisation user: {db_organisation_user}")
+
     db.add(db_organisation_user)
     await db.commit()
     await db.refresh(db_organisation_user)
     return db_organisation_user
+  
+async def get_organisation_by_user_id(db: AsyncSession, user_id: uuid.UUID):
+    result = await db.execute(select(models.Organisation).where(models.Organisation.user_id == user_id))
+    return result.scalars().first()
 
-async def create_case(db: AsyncSession, case: schemas.CaseCreate):
+async def create_case(db: AsyncSession, case: schemas.CaseCreate, current_user: models.User):
     db_case = models.Case(
-        id=uuid.uuid4(),
+        id=UUID,
         title=case.title,
         diagnosis=case.diagnosis,
         medication=case.medication,
@@ -66,6 +76,8 @@ async def create_case(db: AsyncSession, case: schemas.CaseCreate):
         doctor_id=case.doctor_id,
         patient_id=case.patient_id,
         organisation_id=case.organisation_id,
+        created_by=current_user.username,
+        updated_by=current_user.username,
     )
     db.add(db_case)
     await db.commit()
