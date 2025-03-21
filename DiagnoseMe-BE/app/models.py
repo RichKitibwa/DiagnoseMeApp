@@ -1,11 +1,12 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Enum
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Enum, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from .database import Base
 import uuid
 from app.constants import UserStatus, UserRole, CaseStatus
+from app.auditable import Auditable
 
-class User(Base):
+class User(Base, Auditable):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String, unique=True, index=True)
@@ -16,14 +17,14 @@ class User(Base):
     registration_number = Column(String, nullable=True)
     verification_code = Column(String, nullable=True)
     gender = Column(String, nullable=True)
-    date_of_birth = Column(DateTime, nullable=True)
+    date_of_birth = Column(Date, nullable=True)
     patient_phone_number = Column(String, nullable=True)
     allergies = Column(String, nullable=True)
     chronic_illnesses = Column(String, nullable=True)
     next_of_kin_name = Column(String, nullable=True)
     next_of_kin_phone_number = Column(String, nullable=True)
 
-class Organisation(Base):
+class Organisation(Base, Auditable):
     __tablename__ = "organisation"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"))
@@ -31,7 +32,7 @@ class Organisation(Base):
     location = Column(String, nullable=False)
     user = relationship("User", back_populates="organisations")
 
-class OrganisationUser(Base):
+class OrganisationUser(Base, Auditable):
     __tablename__ = "organisation_user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     organisation_id = Column(UUID(as_uuid=True), ForeignKey("organisation.id"))
@@ -40,7 +41,7 @@ class OrganisationUser(Base):
     organisation = relationship("Organisation", back_populates="organisation_users")
     user = relationship("User", back_populates="organisation_users")
 
-class Case(Base):
+class Case(Base, Auditable):
     __tablename__ = "case"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     doctor_id = Column(UUID(as_uuid=True), ForeignKey("user.id"))

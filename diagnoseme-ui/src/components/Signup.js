@@ -12,40 +12,42 @@ const Signup = () => {
     const [clinic, setClinic] = useState('')
     const [location, setLocation] = useState('')
     const [password, setPassword] = useState('');
-    const [userId, setUserId] = useState('');
 
     const navigate = useNavigate();
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleSubmit = async (e) => {
       e.preventDefault();
-      
-      // try {
-      //   const response = await axios.post('/api/auth/signup', {
-      //     username,
-      //     email,
-      //     role,
-      //     registrationNumber,
-      //     clinic,
-      //     location,
-      //     password
-      //   });
+      setIsLoading(true);
+
       try {
         const response = await axios.post('/auth/signup', {
           username,
           email,
           user_role: role,
           registration_number: role === 'DOCTOR' ? registrationNumber : undefined,
-          clinic_name: role === 'DOCTOR' ? clinic : undefined,
+          clinic: role === 'DOCTOR' ? clinic : undefined,
           location: role === 'DOCTOR' ? location : undefined,
           password
         });
-  
-        setUserId(response.data.userId);
 
-        navigate('/verify', {state: { userId: response.data.userId, role: response.data.userRole }}); 
-        // navigate('/doctor');
+        console.log("User role:", response.data.user_role);
+
+        console.log("Signup response:", response.data);
+
+        navigate('/verify', {state: { userId: response.data.user_id, role: response.data.user_role }}); 
       } catch (error) {
-        console.error(error);
+
+        if (error.response) {
+          console.error("Error during signup:", error.response.data);
+          alert(`Signup failed: ${error.response.data.detail ? JSON.stringify(error.response.data.detail) : 'Unknown error'}`);
+        } else {
+          console.error("Error during signup:", error);
+          alert('Signup failed: Network or server error');
+        }
+      } finally {
+          setIsLoading(false);
       }
     };
 
@@ -98,24 +100,16 @@ const Signup = () => {
                               <label htmlFor="location" className="form-label">Clinic Location</label>
                               <input type="text" className="form-control" id="location" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required/>
                           </div>  
-                        )}
-                         {role === 'DOCTOR' && (
-                      <div className="mb-3">
-                        <label htmlFor="registrationNumber" className="form-label">Registration Number</label>
-                        <input type="text" className="form-control" id="registrationNumber" placeholder="Registration Number" value={registrationNumber} onChange={(e) => setRegistrationNumber(e.target.value)} required />
-                        <label htmlFor="clinic" className="form-label">Register Clinic</label>
-                        <input type="text" className="form-control" id="clinic" placeholder="Clinic name" value={clinic} onChange={(e) => setClinic(e.target.value)} required />
-                        <label htmlFor="location" className="form-label">Clinic Location</label>
-                        <input type="text" className="form-control" id="location" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required />
-                      </div>
-                    )}
-                            
+                        )}  
+
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">Password</label>
                             <input type="password" className="form-control" id="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                         </div>
 
-                        <button type="submit" className="btn btn-primary w-100">SignUp</button>
+                        <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
+                          {isLoading ? 'Signing Up...' : 'Sign Up'}
+                        </button>
                     </form>
                   </div>  
                 </div> 

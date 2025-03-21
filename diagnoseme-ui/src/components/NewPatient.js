@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import ReactDatePicker from 'react-datepicker';
+import DatePicker from 'react-datepicker';
+import { format } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from "axios";
 import { Row, Col, Container, Form, Button } from 'react-bootstrap';
 import DoctorSideNav from "./DoctorSideNav";
+import { USER_ROLE } from '../utils/Constants';
 
 function NewPatient() {
     const [patientInfo, setPatientInfo] = useState({
@@ -30,30 +32,42 @@ function NewPatient() {
     };
 
     const handleDateChange = (date) => {
-        setPatientInfo({
-            ...patientInfo,
-            dateOfBirth: date,
-        });
+        setPatientInfo(prev => ({
+            ...prev,
+            dateOfBirth: date
+        }));
     };
 
     const handleSubmit = async(e) => {
         e.preventDefault();
+
+        const formattedDate = patientInfo.dateOfBirth ? 
+            format(new Date(patientInfo.dateOfBirth), 'yyyy-MM-dd') : null;
+
         const formattedPatientInfo = {
-            ...patientInfo,
-            dateOfBirth: patientInfo.dateOfBirth ? patientInfo.dateOfBirth.toISOString().split('T')[0] : null,
+            username: patientInfo.username,
+            email: patientInfo.email,
+            gender: patientInfo.gender,
+            user_role: USER_ROLE.PATIENT,
+            date_of_birth: formattedDate,
+            patient_phone_number: patientInfo.patientPhoneNumber,
+            allergies: patientInfo.allergies,
+            chronic_illnesses: patientInfo.chronicIllnesses,
+            next_of_kin_name: patientInfo.nextOfKinName,
+            next_of_kin_phone_number: patientInfo.nextOfKinPhoneNumber,
         };
+        console.log('Formatted Patient Info:', formattedPatientInfo);
         setIsLoading(true);
 
         try {
             const token = localStorage.getItem('jwtToken');
-            const response = await axios.post('/api/add-patient', formattedPatientInfo, {
+            const response = await axios.post('/patients/create_patient', formattedPatientInfo, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
-            console.log("token", token)
+            
             if (response.status === 200) {
                 setPatientInfo({
                     username: '',
@@ -69,11 +83,11 @@ function NewPatient() {
                 setSubmissionMessage('Patient added successfully!');
             }
         } catch (error) {
+            console.error('Error during patient creation:', error.response?.data || error.message);
             setSubmissionMessage('An error occurred while adding the patient. Please try again.');
         } finally {
             setIsLoading(false);
         }
-        console.log('Form data submitted:', patientInfo);
     };
 
     return (
@@ -129,10 +143,12 @@ function NewPatient() {
                                             <label htmlFor="dateOfBirth" className="form-label">
                                                 Date of Birth
                                             </label>
-                                            <ReactDatePicker
+                                            <DatePicker
                                                   selected={patientInfo.dateOfBirth}
                                                   onChange={handleDateChange}
                                                   className="form-control"
+                                                  dateFormat="yyyy-MM-dd"
+                                                  maxDate={new Date()}
                                                   showMonthDropdown
                                                   showYearDropdown
                                                   showIcon
