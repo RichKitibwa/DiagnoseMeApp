@@ -1,25 +1,53 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './auth.css';
+import '../App.css';
 import { useNavigate } from 'react-router';
+import { 
+  TextField, 
+  MenuItem, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  Box, 
+  Paper, 
+  Typography, 
+  Container, 
+  FormHelperText,
+  Alert,
+  InputAdornment,
+  IconButton,
+  Button,
+  CircularProgress
+} from '@mui/material';
+import { 
+  Visibility, 
+  VisibilityOff, 
+  PersonOutline, 
+  EmailOutlined, 
+  MedicalServicesOutlined, 
+  LocationOnOutlined,
+  LockOutlined 
+} from '@mui/icons-material';
 
 const Signup = () => {
-
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('');
     const [registrationNumber, setRegistrationNumber] = useState('');
-    const [clinic, setClinic] = useState('')
-    const [location, setLocation] = useState('')
+    const [clinic, setClinic] = useState('');
+    const [location, setLocation] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
-
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       setIsLoading(true);
+      setError('');
 
       try {
         const response = await axios.post('/auth/signup', {
@@ -32,93 +60,201 @@ const Signup = () => {
           password
         });
 
-        console.log("User role:", response.data.user_role);
-
-        console.log("Signup response:", response.data);
-
         navigate('/verify', {state: { userId: response.data.user_id, role: response.data.user_role }}); 
       } catch (error) {
-
         if (error.response) {
           console.error("Error during signup:", error.response.data);
-          alert(`Signup failed: ${error.response.data.detail ? JSON.stringify(error.response.data.detail) : 'Unknown error'}`);
+          setError(error.response.data.detail ? 
+            (typeof error.response.data.detail === 'object' ? 
+              JSON.stringify(error.response.data.detail) : 
+              error.response.data.detail) : 
+            'Signup failed. Please try again.');
         } else {
           console.error("Error during signup:", error);
-          alert('Signup failed: Network or server error');
+          setError('Network or server error. Please try again later.');
         }
       } finally {
           setIsLoading(false);
       }
     };
 
+    const handleTogglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
   return (
-    <div className='register'>
-        <div className='register-container background-image'>
-          <div className='container mt-5'>
-            <div className='row justify-content-center'>
-              <div className='col-md-4'>
-                <div className='card'>
-                  <div className='card-header text-center'>
-                    <h3>Sign Up</h3>
-                  </div>
-                  <div className='card-body'>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="username" className="form-label">Username</label>
-                            <input type="text" className="form-control" id="username" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} required/>
-                        </div>
+    <Box className='register'>
+      <Container maxWidth="sm" className="signup-container">
+        <Paper elevation={6} className="signup-paper">
+          <Box className="signup-header">
+            <Typography variant="h5" fontWeight="500">Sign Up</Typography>
+          </Box>
+          <Box className="signup-content">
+            {error && <Alert severity="error" className="signup-error">{error}</Alert>}
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <TextField
+                fullWidth
+                margin="normal"
+                id="username"
+                label="Username"
+                variant="outlined"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonOutline />
+                    </InputAdornment>
+                  ),
+                }}
+                className="signup-form-field"
+              />
 
-                        <div className="mb-3">
-                            <label htmlFor="email" className="form-label">Email</label>
-                            <input type="email" className="form-control" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-                        </div>
+              <TextField
+                fullWidth
+                margin="normal"
+                id="email"
+                label="Email"
+                type="email"
+                variant="outlined"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailOutlined />
+                    </InputAdornment>
+                  ),
+                }}
+                className="signup-form-field"
+              />
 
-                        <div className="mb-3">
-                            <label htmlFor="role" className="form-label">Register as Doctor or Patient: </label>
-                            <select className="form-select" id="role" value={role} onChange={(e) => setRole(e.target.value)} required>
-                              <option value="">Register as Doctor or Patient</option>
-                              <option value="DOCTOR">Doctor</option>
-                              <option value="PATIENT">Patient</option>
-                            </select> 
-                        </div>
+              <FormControl fullWidth margin="normal" className="signup-form-field">
+                <InputLabel id="role-label">Register as</InputLabel>
+                <Select
+                  labelId="role-label"
+                  id="role"
+                  value={role}
+                  label="Register as"
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <MenuItem value="">Select role</MenuItem>
+                  <MenuItem value="DOCTOR">Doctor</MenuItem>
+                  <MenuItem value="PATIENT">Patient</MenuItem>
+                </Select>
+                <FormHelperText>Please select your role</FormHelperText>
+              </FormControl>
 
-                        {role === 'DOCTOR' && (
-                          <div className="mb-3">
-                              <label htmlFor="registrationNumber" className="form-label">Registration Number</label>
-                              <input
-                                  type="text"
-                                  className="form-control"
-                                  id="registrationNumber"
-                                  placeholder="Registration Number"
-                                  value={registrationNumber}
-                                  onChange={(e) => setRegistrationNumber(e.target.value)}
-                                  required
-                              />
-                              <label htmlFor="clinic" className="form-label">Register Clinic</label>
-                              <input type="text" className="form-control" id="clinic" placeholder="Clinic name" value={clinic} onChange={(e) => setClinic(e.target.value)} required/>
+              {role === 'DOCTOR' && (
+                <Box className="signup-doctor-fields">
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    id="registrationNumber"
+                    label="Registration Number"
+                    variant="outlined"
+                    value={registrationNumber}
+                    onChange={(e) => setRegistrationNumber(e.target.value)}
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MedicalServicesOutlined />
+                        </InputAdornment>
+                      ),
+                    }}
+                    className="signup-form-field"
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    id="clinic"
+                    label="Clinic Name"
+                    variant="outlined"
+                    value={clinic}
+                    onChange={(e) => setClinic(e.target.value)}
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MedicalServicesOutlined />
+                        </InputAdornment>
+                      ),
+                    }}
+                    className="signup-form-field"
+                  />
 
-                              <label htmlFor="location" className="form-label">Clinic Location</label>
-                              <input type="text" className="form-control" id="location" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required/>
-                          </div>  
-                        )}  
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    id="location"
+                    label="Clinic Location"
+                    variant="outlined"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LocationOnOutlined />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              )}
 
-                        <div className="mb-3">
-                            <label htmlFor="password" className="form-label">Password</label>
-                            <input type="password" className="form-control" id="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                        </div>
+              <TextField
+                fullWidth
+                margin="normal"
+                id="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlined />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleTogglePasswordVisibility}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                className="signup-password-field"
+              />
 
-                        <button type="submit" className="btn btn-primary w-100" disabled={isLoading}>
-                          {isLoading ? 'Signing Up...' : 'Sign Up'}
-                        </button>
-                    </form>
-                  </div>  
-                </div> 
-              </div>   
-            </div>  
-          </div>  
-        </div>    
-    </div>    
-     
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="large"
+                disabled={isLoading}
+                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                className="signup-button"
+              >
+                {isLoading ? 'Signing up...' : 'Sign Up'}
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>  
   );
 };
 

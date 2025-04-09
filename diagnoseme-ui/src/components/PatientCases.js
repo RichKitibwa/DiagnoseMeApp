@@ -69,7 +69,7 @@ const PatientCases = () => {
                             </tbody>
                         </Table>
                     ) : (
-                        <p style={{ marginTop: 20 }}>
+                        <p className="no-cases-message">
                             No Cases yet.
                         </p>
                     )}

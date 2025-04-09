@@ -64,7 +64,7 @@ const ExisitingPatients = () => {
                 <Col md={9} lg={10}>
                     <h2 className="my-4">Patients</h2>
                     <div className="d-flex justify-content-end mb-3">
-                        <InputGroup className="mb-3 search-patient style={{ width: '300px' }}">
+                        <InputGroup className="mb-3 search-patient patient-search">
                             <FormControl
                                 placeholder="Search by name..."
                                 aria-label="Search by name"
@@ -86,13 +86,13 @@ const ExisitingPatients = () => {
                                     .map((patient) => (
                                         <tr key={patient.id} onClick={() => handlePatientClick(patient.id)} className="patient-details">
                                             <td>{patient.username}</td>
-                                            <td>{formatDate(patient.createdDate)}</td>
+                                            <td>{formatDate(patient.created_at)}</td>
                                         </tr>
                                     ))}
                             </tbody>
                         </Table>
                     ) : (
-                        <p style={{ marginTop: 20 }}>
+                        <p className="no-patients-message">
                             No patients added yet, please add patients.
                         </p>
                     )}

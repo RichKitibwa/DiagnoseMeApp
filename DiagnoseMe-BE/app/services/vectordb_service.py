@@ -177,17 +177,33 @@ def load_vectorstore_from_s3():
 def retrieve_context(query: str, retriever) -> str:
     query = ' '.join(query.split())
     try:
-        results = retriever.invoke(query)
+        # Expand query to encourage broader retrieval across medical specialties
+        expanded_query = f"Medical analysis considering multiple specialties for: {query}"
+        
+        print(f"DEBUG - Original query: {query}")
+        print(f"DEBUG - Expanded query: {expanded_query}")
+        
+        # Use expanded query for retrieval
+        results = retriever.invoke(expanded_query)
+        
         if not results:
-            return "No relevant documents found."
+            print("DEBUG - No relevant documents found in retrieval")
+            return "No relevant documents found. Consider possibilities across all medical specialties including infectious diseases, cardiology, endocrinology, neurology, gastroenterology, and more."
             
         # Combine results with source tracking
         contexts = []
-        for doc in results:
+        
+        print(f"DEBUG - Retrieved {len(results)} documents")
+        
+        for i, doc in enumerate(results):
             source = doc.metadata.get('filename', 'Unknown source')
             contexts.append(f"From {source}:\n{doc.page_content}\n")
+            print(f"DEBUG - Document {i+1}: From {source}, First 100 chars: {doc.page_content[:100]}...")
             
-        return "\n".join(contexts)
+        result_context = "\n".join(contexts)
+        print(f"DEBUG - Total context length: {len(result_context)} characters")
+        
+        return result_context
         
     except Exception as e:
         print(f"Retrieval error: {e}")

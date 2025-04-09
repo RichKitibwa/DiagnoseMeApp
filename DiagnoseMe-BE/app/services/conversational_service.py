@@ -12,7 +12,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 PROMPT_TEMPLATE = """
-You are a highly skilled, experienced medical doctor trained to assist another doctor by analyzing patient information using ONLY the provided reference materials.
+You are an advanced medical diagnostic assistant with expertise across ALL medical specialties. Your role is to help doctors analyze patient information using the provided reference materials and your broad medical knowledge.
 
 REFERENCE TEXT TO USE:
 {context}
@@ -20,57 +20,51 @@ REFERENCE TEXT TO USE:
 PATIENT'S CURRENT INFORMATION:
 {patient_data}
 
+DOCTOR'S CURRENT QUERY:
+{query}
+
 PREVIOUS CONVERSATION:
 {chat_history}
 
 YOUR TASK:
-1. Analyze the information provided and decide if additional details are needed:
-   - **If more information is needed**:
-     - Ask a single, clear, and relevant follow-up question.
-     - Briefly explain why this information is important.
-   - **If sufficient information is available (no further questions needed)**:
-     - Provide a concise preliminary assessment.
-     - Highlight key findings from the reference text in bullet points (avoid unnecessary repetition).
-     - Recommend appropriate next steps, such as tests or treatments, in a clear and actionable manner.
+1. ANALYZE CAREFULLY: Consider all aspects of the patient's information, including demographics, history, symptoms, and previous conversation. Do not fixate on a single medical specialty or condition.
 
-2. Do not suggest **Next Steps** until all relevant questions have been asked and answered. You can ask a maximum of 6 follow-up questions before concluding.
+2. CHECK FOR CRITICAL SIGNS: First scan for any critical or life-threatening signs/symptoms (e.g., severe chest pain, signs of stroke, severe breathing difficulty, etc.) that require immediate attention.
 
-3. Keep responses concise and professional:
-   - Avoid restating patient details unnecessarily.
-   - Use plain language with minimal repetition.
-   - Do not overemphasize "according to the reference text." Implicitly ground all responses in the reference text without explicitly repeating this phrase.
+3. DETERMINE RESPONSE TYPE:
+   - If CRITICAL SIGNS PRESENT: Format your response beginning with "**ALERT: [critical condition]**" followed by urgent recommendations.
+   - If MORE INFORMATION NEEDED: Ask a focused question without providing any impression yet.
+   - If SUFFICIENT INFORMATION: Provide a complete assessment with impression and recommendations.
 
-4. Avoid generic or verbose explanations:
-   - Focus on actionable insights, rationale, or specific follow-up steps.
-   - Responses should flow naturally and simulate a professional conversation.
+4. RESPONSE STRUCTURE WHEN ASKING QUESTIONS:
+   - **Question**: Ask one clear, focused question.
+   - **Reason**: Briefly explain why this information is necessary.
+   - Do NOT provide any differential diagnosis or impression when asking questions.
 
-5. Ensure that every response is structured as follows:
-   - **Assessment** (if applicable): A brief summary of the patient's condition.
-   - **Key Findings**: Briefly highlight 2-3 relevant points from the reference text.
-   - **Question** (if applicable): if more iformation is needed, ask a single, clear, and relevant follow-up question and briefly explain why it is important.
-   - **Next Steps** (only if no further questions are needed): Provide specific actions or recommendations.      
+5. RESPONSE STRUCTURE WHEN PROVIDING FINAL ASSESSMENT:
+   - **Impression**: List 2-4 possible conditions from different medical specialties that could explain the symptoms (only when you have sufficient information).
+   - **Key Findings**: Highlight relevant medical knowledge from the reference text that supports your analysis.
+   - **Recommendations**: Provide specific next steps such as tests, treatments, or referrals.
 
-Remember:
-- Never make suggestions or provide information not supported by the reference text.
-- Avoid redundant explanations or overuse of patient details.
-- Don't ask for information that was already provided.
-- Ensure conversational flow naturally leads to conclusions after 6 follow-up questions.
-- Include a clear statement that this is to support, not replace, the doctor's clinical judgment at the end.
+6. CONSIDER ALL SPECIALTIES: Avoid focusing exclusively on respiratory or any single category of conditions unless clearly indicated.
 
+7. BE EFFICIENT: Do not repeat information already provided or ask about symptoms already addressed in the chat history.
+
+Remember that this assessment is to support, not replace, the doctor's clinical judgment.
 """
 
 def generate_response(query: str, chat_history: str, patient_data: str, retriever):
     try:
         # Retrieve context
         context = retrieve_context(query, retriever)
-
-        # Check if maximum questions have been asked
-        # if questions_asked >= 6:
-        #     chat_history += "\nThe model has gathered sufficient information. No more questions are needed."
+        
+        print(f"DEBUG - In generate_response: query={query}")
+        print(f"DEBUG - Patient data summary: {patient_data[:100]}...")
 
         # Populate prompt
         prompt = PROMPT_TEMPLATE.format(
             patient_data=patient_data,
+            query=query, 
             context=context,
             chat_history=chat_history or "No previous conversation",
         )
@@ -84,16 +78,20 @@ def generate_response(query: str, chat_history: str, patient_data: str, retrieve
 
         reply = response.choices[0].message.content
 
-        # is_asking_question = "Question:" in reply and "Next Steps:" not in reply
-
-        # if is_asking_question:
-        #     questions_asked += 1
-
-        # Check for diagnosis completion
-        # diagnosis_complete = not is_asking_question
-
-        diagnosis_keywords = ["diagnosis:", "recommend:", "suggest:", "assessment:"]
-        diagnosis_complete = any(keyword in reply.lower() for keyword in diagnosis_keywords)
+        # Determine if this is a complete diagnosis based on presence of "Impression" section
+        has_impression = "**impression**:" in reply.lower()
+        has_recommendations = "**recommendations**:" in reply.lower()
+        
+        diagnosis_complete = has_impression and has_recommendations
+        
+        # Check if there's an alert
+        has_alert = "**alert:" in reply.lower()
+        
+        # If there's an alert, consider it important even if not complete
+        if has_alert:
+            print("DEBUG - CRITICAL ALERT detected in response")
+        
+        print(f"DEBUG - Diagnosis complete: {diagnosis_complete}")
         
         return reply, diagnosis_complete
     

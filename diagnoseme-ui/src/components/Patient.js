@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, TextField, Button, Box, Divider, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, TextField, Button, Box, Divider, IconButton, Paper } from '@mui/material';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import {calculateAge} from '../utils/CalculateAge';
@@ -86,15 +86,15 @@ const Patient = () => {
     return (
         <Container fluid className="view-container">
              <Row>
-                <Col  md={3} lg={2} className="d-none d-lg-block sidebar">
+                <Col md={3} lg={2} className="d-none d-lg-block sidebar">
                     <DoctorSideNav />
                 </Col>
-                <Col  md={9} lg={10} className="">
-                    <Box sx={{ margin: 2 }}>
-                        <Card variant="outlined" sx={{ marginBottom: 2 }}>
+                <Col md={9} lg={10} className="">
+                    <Box className="patient-details-container">
+                        <Card variant="outlined" className="patient-card">
                             <CardContent>
                                 <Typography variant="h5">Patient Details</Typography>
-                                <Divider sx={{ marginY: 2 }} />
+                                <Divider className="patient-divider" />
                                 <Typography variant="body1">
                                 <strong>Name:</strong> {patientDetails.username}
                                 </Typography>
@@ -114,132 +114,71 @@ const Patient = () => {
                         </Card>
                     </Box>    
 
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                height: "100vh",
-                                overflow: "hidden",
-                            }}
-                            >
+                    <Box className="patient-chat-container">
+                        <Box className="patient-chat-messages">
+                            {chatHistory.map((chat, index) => (
+                            chat.user === "Doctor" ? (
                             <Box
-                                sx={{
-                                flexGrow: 1,
-                                overflowY: "auto",
-                                padding: "20px",
-                                marginBottom: "80px",
-                                }}
+                                key={index}
+                                className="doctor-message-container"
                             >
-                                {chatHistory.map((chat, index) => (
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: chat.user === "Doctor" ? "flex-end" : "flex-start",
-                                        marginBottom: 2,
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            maxWidth: "70%",
-                                            padding: 2,
-                                            borderRadius: 10,
-                                            backgroundColor:
-                                            chat.user === "Doctor" ? "#e0f7fa" : "#f5f5f5",
-                                            boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
-                                        }}
-                                    >
-                                    <Typography
-                                            variant="body2"
-                                            sx={{
-                                            fontWeight: "bold",
-                                            color: chat.user === "Doctor" ? "#00796b" : "#000",
-                                            marginBottom: 1,
-                                            }}
-                                        >
-                                            {chat.user}
-                                        </Typography>
-                                        {chat.user === "Model" ? (
-                                            formatResponse(chat.message)
-                                        ) : (
-                                            <Typography variant="body1">{chat.message}</Typography>
-                                        )}
-                                    </Box>
+                                <Box className="doctor-message">
+                                    <Typography variant="body1">{chat.message}</Typography>
                                 </Box>
-                                ))}
                             </Box>
-
+                            ) : (
                             <Box
-                                sx={{
-                                    position: "fixed",
-                                    bottom: 40,
-                                    left: "50%",
-                                    transform: "translateX(-50%)",
-                                    width: "70%",
-                                    maxWidth: "900px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    backgroundColor: "#f5f5f5",
-                                    borderRadius: 30,
-                                    padding: "5px 15px",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                    zIndex: 2,
-                                }}
+                                key={index}
+                                className="model-message-container"
                             >
-                                <IconButton color="primary" component="label">
-                                    <PhotoCamera />
-                                    <input
-                                        type="file"
-                                        hidden
-                                        onChange={(event) => console.log(event.target.files[0])}
-                                    />
-                                </IconButton>
-
-                                <TextField
-                                    placeholder="Enter clinical notes or questions"
-                                    multiline
-                                    maxRows={5}
-                                    fullWidth
-                                    value={currentInput}
-                                    onChange={(e) => setCurrentInput(e.target.value)}
-                                    disabled={isLoading}
-                                    sx={{
-                                        backgroundColor: "transparent",
-                                        flexGrow: 1,
-                                        fontSize: "16px",
-                                        border: "none",
-                                        outline: "none",
-                                        padding: "5px 0",
-                                    }}
-                                    InputProps={{
-                                        disableUnderline: true,
-                                    }}
-                                />
-
-                                <IconButton
-                                    color="primary"
-                                    onClick={handleSendMessage}
-                                    disabled={isLoading} 
-                                >
-                                    {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
-                                </IconButton>
+                                <Typography variant="body1">
+                                    {formatResponse(chat.message)}
+                                </Typography>
                             </Box>
-
-                            <Typography
-                                variant="caption"
-                                sx={{
-                                position: "fixed",
-                                bottom: 0,
-                                left: "50%",
-                                transform: "translateX(-50%)",
-                                color: "gray",
-                                textAlign: "center",
-                                paddingBottom: "10px",
-                                }}
-                            >
-                                This assessment is to support, not replace, the doctor's clinical judgment.
-                            </Typography>     
+                            )
+                            ))}
+                        </Box>
                     </Box>
+                    
+                    <Box className="message-input-container">
+                        <IconButton color="primary" component="label">
+                            <PhotoCamera />
+                            <input
+                                type="file"
+                                hidden
+                                onChange={(event) => console.log(event.target.files[0])}
+                            />
+                        </IconButton>
+
+                        <TextField
+                            placeholder="Enter clinical notes or questions"
+                            multiline
+                            maxRows={5}
+                            fullWidth
+                            value={currentInput}
+                            onChange={(e) => setCurrentInput(e.target.value)}
+                            disabled={isLoading}
+                            className="message-input"
+                            InputProps={{
+                                disableUnderline: true,
+                            }}
+                        />
+
+                        <IconButton
+                            color="primary"
+                            onClick={handleSendMessage}
+                            disabled={isLoading} 
+                        >
+                            {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                        </IconButton>
+                    </Box>
+
+                    <Typography
+                        variant="caption"
+                        className="patient-disclaimer"
+                    >
+                        This assessment is to support, not replace, the doctor's clinical judgment.
+                    </Typography>
                 </Col>
             </Row>
         </Container>            

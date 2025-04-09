@@ -111,7 +111,8 @@ class Case(CaseBase):
         from_attributes = True
 
 class DiagnosisInput(BaseModel):
-    patient_data: Dict[str, str]
+    query: str 
+    patient_data: Dict[str, str] 
     chat_history: Optional[str] = ""
 
 class DiagnosisResponse(BaseModel):
