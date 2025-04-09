@@ -1,13 +1,41 @@
 import React, { useState } from "react";
-import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
-import 'react-datepicker/dist/react-datepicker.css';
 import axios from "axios";
-import { Row, Col, Container, Form, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import DoctorSideNav from "./DoctorSideNav";
 import { USER_ROLE } from '../utils/Constants';
+import '../App.css';
+import { 
+    TextField,
+    MenuItem,
+    Grid,
+    Box,
+    Paper,
+    Typography,
+    Snackbar,
+    Alert,
+    Container,
+    InputAdornment,
+    Button,
+    CircularProgress
+} from '@mui/material';
+import { 
+    DatePicker, 
+    LocalizationProvider 
+} from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import {
+    PersonOutline,
+    WcOutlined,
+    CalendarMonthOutlined,
+    PhoneOutlined,
+    EmailOutlined,
+    MedicalInformationOutlined,
+    ContactEmergencyOutlined
+} from '@mui/icons-material';
 
 function NewPatient() {
+    const navigate = useNavigate();
     const [patientInfo, setPatientInfo] = useState({
         username: '',
         gender: '',
@@ -22,6 +50,8 @@ function NewPatient() {
 
     const [submissionMessage, setSubmissionMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,17 +86,11 @@ function NewPatient() {
             next_of_kin_name: patientInfo.nextOfKinName,
             next_of_kin_phone_number: patientInfo.nextOfKinPhoneNumber,
         };
-        console.log('Formatted Patient Info:', formattedPatientInfo);
+        
         setIsLoading(true);
 
         try {
-            const token = localStorage.getItem('jwtToken');
-            const response = await axios.post('/patients/create_patient', formattedPatientInfo, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            const response = await axios.post('/patients/create_patient', formattedPatientInfo);
             
             if (response.status === 200) {
                 setPatientInfo({
@@ -80,175 +104,276 @@ function NewPatient() {
                     nextOfKinName: '',
                     nextOfKinPhoneNumber: '',
                 });
+                
                 setSubmissionMessage('Patient added successfully!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
+                
+                // Navigate to the patient page after a short delay
+                setTimeout(() => {
+                    navigate(`/patient/${response.data.patient_id}`);
+                }, 1500);
             }
         } catch (error) {
             console.error('Error during patient creation:', error.response?.data || error.message);
             setSubmissionMessage('An error occurred while adding the patient. Please try again.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
     return (
-        <Container fluid className="view-container">
-            <Row>
-                <Col  md={3} lg={2} className="d-none d-lg-block sidebar">
-                    <DoctorSideNav />
-                </Col>
-                <Col  md={9} lg={10} className="">
-                    <Row>
-                        <div className="col-md-6 offset-md-3">
-                            <div className="card">
-                                <div className="card-body">
-                                    <h2 className="card-title">Add New Patient Information</h2>
-                                    {submissionMessage && (
-                                        <div className="alert alert-info" role="alert">
-                                            {submissionMessage}
-                                        </div>
-                                    )}
-                                    <form onSubmit={handleSubmit}>
-                                        <div className="mb-3">
-                                            <label htmlFor="username" className="form-label">
-                                                Patient Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="username"
-                                                name="username"
-                                                value={patientInfo.username}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="gender" className="form-label">
-                                                Gender
-                                            </label>
-                                            <select
-                                                className="form-select"
-                                                id="gender"
-                                                name="gender"
-                                                value={patientInfo.gender}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="" disabled hidden>Select Gender</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="Other">Other</option>
-                                            </select>
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="dateOfBirth" className="form-label">
-                                                Date of Birth
-                                            </label>
-                                            <DatePicker
-                                                  selected={patientInfo.dateOfBirth}
-                                                  onChange={handleDateChange}
-                                                  className="form-control"
-                                                  dateFormat="yyyy-MM-dd"
-                                                  maxDate={new Date()}
-                                                  showMonthDropdown
-                                                  showYearDropdown
-                                                  showIcon
-                                                  dropdownMode="select"
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="patientPhoneNumber" className="form-label">
-                                                Phone Number
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                id="patientPhoneNumber"
-                                                name="patientPhoneNumber"
-                                                value={patientInfo.patientPhoneNumber}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="email" className="form-label">
-                                                Email
-                                            </label>
-                                            <input 
-                                                type="email" 
-                                                className="form-control" 
-                                                id="email" 
-                                                name="email"
-                                                placeholder="Email" 
-                                                value={patientInfo.email} 
-                                                onChange={handleChange} 
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="allergies" className="form-label">
-                                                Known Allergies
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="allergies"
-                                                name="allergies"
-                                                value={patientInfo.allergies}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="chronicIllnesses" className="form-label">
-                                                Chronic Illnesses
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="chronicIllnesses"
-                                                name="chronicIllnesses"
-                                                value={patientInfo.chronicIllnesses}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="nextOfKinName" className="form-label">
-                                                Next of Kin
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="nextOfKinName"
-                                                name="nextOfKinName"
-                                                value={patientInfo.nextOfKinName}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="nextOfKinPhoneNumber" className="form-label">
-                                                Next of Kin's Phone Number
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                id="nextOfKinPhoneNumber"
-                                                name="nextOfKinPhoneNumber"
-                                                value={patientInfo.nextOfKinPhoneNumber}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                        <button type="submit" className="btn btn-primary text-center" disabled={isLoading}>
-                                            {isLoading ? 'Adding Patient...' : 'Add Patient'}
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </Row>
-                </Col>    
-            </Row>                   
-        </Container>
+        <div className="new-patient-container">
+            <div className="new-patient-sidebar">
+                <DoctorSideNav />
+            </div>
+            <Container 
+                component="main" 
+                maxWidth="md" 
+                className="new-patient-content"
+            >
+                <Paper 
+                    elevation={3} 
+                    className="new-patient-form-container"
+                >
+                    <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 500 }}>
+                        Add New Patient Information
+                    </Typography>
+                    
+                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Patient Name"
+                                    name="username"
+                                    value={patientInfo.username}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PersonOutline />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label="Gender"
+                                    name="gender"
+                                    value={patientInfo.gender}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    // InputProps={{
+                                    //     startAdornment: (
+                                    //         <InputAdornment position="start">
+                                    //             <WcOutlined />
+                                    //         </InputAdornment>
+                                    //     ),
+                                    // }}
+                                >
+                                    <MenuItem value="">Select Gender</MenuItem>
+                                    <MenuItem value="Male">Male</MenuItem>
+                                    <MenuItem value="Female">Female</MenuItem>
+                                    <MenuItem value="Other">Other</MenuItem>
+                                </TextField>
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        label="Date of Birth"
+                                        value={patientInfo.dateOfBirth}
+                                        onChange={handleDateChange}
+                                        maxDate={new Date()}
+                                        slotProps={{
+                                            textField: {
+                                                fullWidth: true,
+                                                variant: 'outlined',
+                                                InputProps: {
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <CalendarMonthOutlined />
+                                                        </InputAdornment>
+                                                    ),
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Phone Number"
+                                    name="patientPhoneNumber"
+                                    value={patientInfo.patientPhoneNumber}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PhoneOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    value={patientInfo.email}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <EmailOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Known Allergies"
+                                    name="allergies"
+                                    value={patientInfo.allergies}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <MedicalInformationOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Chronic Illnesses"
+                                    name="chronicIllnesses"
+                                    value={patientInfo.chronicIllnesses}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <MedicalInformationOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Next of Kin"
+                                    name="nextOfKinName"
+                                    value={patientInfo.nextOfKinName}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <ContactEmergencyOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Next of Kin's Phone Number"
+                                    name="nextOfKinPhoneNumber"
+                                    value={patientInfo.nextOfKinPhoneNumber}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PhoneOutlined />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} sx={{ mt: 2 }}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    size="large"
+                                    disabled={isLoading}
+                                    startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                                    sx={{ 
+                                        py: 1.5,
+                                        fontSize: '1rem',
+                                        textTransform: 'none',
+                                        borderRadius: 1.5,
+                                        boxShadow: 2
+                                    }}
+                                >
+                                    {isLoading ? 'Adding Patient...' : 'Add Patient'}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Container>
+            
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={1500}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                className="new-patient-snackbar"
+            >
+                <Alert 
+                    onClose={handleCloseSnackbar} 
+                    severity={snackbarSeverity} 
+                    variant="filled" 
+                    sx={{ width: '100%' }}
+                >
+                    {submissionMessage}
+                </Alert>
+            </Snackbar>
+        </div>
     );
 }
 

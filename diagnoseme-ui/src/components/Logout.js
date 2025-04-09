@@ -1,23 +1,35 @@
 import React from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 
 const LogoutButton = ({ handleLogout }) => {
-
   const navigate = useNavigate();
 
-  const handleLogoutClick = async () => {
+  const handleLogoutClick = () => {
     try {
-      localStorage.removeItem('token');
+      // Clear all localStorage items
+      localStorage.removeItem('jwtToken');
+      localStorage.removeItem('role');
+      
+      // Call parent logout handler
       handleLogout();
+      
+      // Navigate to home page
       navigate('/');
     } catch (error) {
-      console.error(error.response.data);
+      console.error("Error during logout:", error);
     }
   };
 
   return (
-    <Link className="nav-link" onClick={handleLogoutClick}>Logout</Link>
+    <Button 
+      onClick={handleLogoutClick} 
+      variant="outline-danger" 
+      size="sm" 
+      className="nav-link-custom"
+    >
+      Logout
+    </Button>
   );
 };
 

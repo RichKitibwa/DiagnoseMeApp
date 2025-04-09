@@ -296,7 +296,8 @@ body {
 .body-container {
   background-color: #f8f9fa;
   width: 100%;
-  margin-top: 3.5rem;
+  margin-top: 5rem !important;
+  min-height: calc(100vh - 5rem);
 }
 
 /*content container*/
@@ -309,27 +310,46 @@ body {
 
 /*sidebar*/
 .sidebar {
-  padding: 10px;
-  border-right: 1px solid #ccc;
+  background-color: #f8f9fa;
+  padding: 20px 10px;
+  border-right: 1px solid #e1e7ec;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 16.666667%; /* Col-md-2 width */
+  overflow-y: auto;
+  padding-top: calc(5rem + 20px); /* Navbar height + padding */
+  z-index: 99; /* Lower than navbar z-index */
 }
 
 .sidebar-card {
-  padding: 10px;
+  padding: 15px 10px;
 }
 
 .sidebar-card .nav-link {
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 10px;
-  color: black;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  color: #1a365d;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .sidebar-card .nav-link:hover {
-  background-color: #e0e0e0;
-  border-color: #c0c0c0;
-  text-decoration: none; 
-  color: black;
+  background-color: #e8f0fe;
+  color: #0277bd;
+  transform: translateX(5px);
+}
+
+.sidebar-card .nav-link svg {
+  color: #0277bd;
+  font-size: 1.3rem;
 }
 
 /*doctor home component*/
@@ -1027,6 +1047,7 @@ body {
 .navbar-custom {
   transition: all 0.3s ease;
   padding: 15px 0;
+  z-index: 1030;
 }
 
 .navbar-transparent {
@@ -1081,7 +1102,7 @@ body {
 }
 
 .brand-text-diagnose {
-  color: #2d3748;
+  color: #1a365d !important;
 }
 
 .brand-text-me {
@@ -1089,7 +1110,7 @@ body {
 }
 
 .navbar-transparent .brand-text-diagnose {
-  color: white;
+  color: #1a365d !important;
 }
 
 .navbar-menu-btn {
@@ -1173,4 +1194,314 @@ body {
     color: #3182ce !important;
     background-color: rgba(49, 130, 206, 0.1);
   }
+}
+
+.login, .register, .view-container {
+  padding-top: 40px;
+}
+
+
+.view-container .row {
+  --bs-gutter-x: 0;
+}
+
+/* Fix chat input position with fixed sidebar */
+@media (min-width: 992px) {
+  .view-container .MuiBox-root[style*="position: fixed"] {
+    width: calc(83.333333% - 32px) !important;
+    left: calc(16.666667% + 16px) !important;
+  }
+}
+
+/* Ensure mobile sidebar scrolls properly */
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    padding-top: 20px;
+  }
+}
+
+/* Style model responses in chat to fill the entire width */
+.view-container .MuiPaper-root {
+  background-color: #f5f5f7;
+  width: 100%;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 4px solid #0277bd;
+}
+
+.view-container .MuiPaper-root pre {
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+@media (min-width: 992px) {
+  .view-container .row .col-lg-10 {
+    margin-left: 16.666667%; 
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .view-container .MuiBox-root[style*="position: fixed"] {
+    width: calc(100% - 32px) !important;
+    left: 16px !important;
+    bottom: 20px !important;
+  }
+}
+
+/* Patient form positioning fixes */
+@media (max-width: 991.98px) {
+  .view-container .MuiBox-root {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+}
+
+/*NewPatient Component Styles*/
+.new-patient-container {
+  display: flex;
+}
+
+.new-patient-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.new-patient-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1.5rem;
+  margin-left: 0;
+}
+
+.new-patient-form-container {
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 700px;
+}
+
+.new-patient-snackbar {
+  position: fixed;
+  z-index: 9999;
+}
+
+/*LoginForm Component Styles*/
+.login-container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.login-paper {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.login-header {
+  background-color: #3182ce;
+  color: white;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.login-content {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.login-error {
+  margin-bottom: 1.5rem;
+}
+
+.login-text-field {
+  margin-bottom: 1.5rem;
+}
+
+.login-password-field {
+  margin-bottom: 2rem;
+}
+
+.login-button {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 1rem;
+  text-transform: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/*Signup Component Styles*/
+.signup-container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.signup-paper {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.signup-header {
+  background-color: #3182ce;
+  color: white;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.signup-content {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.signup-error {
+  margin-bottom: 1.5rem;
+}
+
+.signup-form-field {
+  margin-bottom: 1rem;
+}
+
+.signup-doctor-fields {
+  margin-bottom: 1rem;
+}
+
+.signup-password-field {
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+}
+
+.signup-button {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 1rem;
+  text-transform: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/*Patient Component Styles*/
+.patient-details-container {
+  margin: 1rem;
+}
+
+.patient-card {
+  margin-bottom: 1rem;
+}
+
+.patient-divider {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.patient-chat-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  position: relative;
+}
+
+.patient-chat-messages {
+  padding: 1.25rem;
+  margin-bottom: 5rem;
+}
+
+.doctor-message-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.doctor-message {
+  max-width: 70%;
+  padding: 0.5rem;
+  border-radius: 0.625rem;
+  background-color: #e0f7fa;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.model-message-container {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.model-message {
+  padding: 0.75rem;
+  background-color: #f5f5f7;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.message-input-container {
+  position: fixed;
+  bottom: 2.5rem;
+  width: calc(100% - 300px);
+  left: calc(16.67% + 1rem);
+  max-width: 1140px;
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 1.875rem;
+  padding: 0.3125rem 0.9375rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.message-input {
+  background-color: transparent;
+  flex-grow: 1;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  padding: 0.3125rem 0;
+}
+
+.patient-disclaimer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  color: gray;
+  text-align: center;
+  padding-bottom: 0.625rem;
+  z-index: 9;
+}
+
+/* Responsive adjustments for patient chat */
+@media (max-width: 991.98px) {
+  .message-input-container {
+    width: calc(100% - 2rem);
+    left: 1rem;
+  }
+}
+
+/*ExistingPatients Component Styles*/
+.patient-search {
+  width: 300px;
+}
+
+.no-patients-message {
+  margin-top: 1.25rem;
+}
+
+/*PatientCases Component Styles*/
+.no-cases-message {
+  margin-top: 1.25rem;
 }

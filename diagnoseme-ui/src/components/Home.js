@@ -52,7 +52,7 @@ const Home = () => {
             <Col lg={6} className="hero-content" data-aos="fade-right" data-aos-delay="100">
               <h1 className="hero-title">Empowering Healthcare with <span className="gradient-text">Intelligent Diagnostics</span></h1>
               <p className="hero-text">
-                DiagnoseMe combines advanced AI algorithms with medical expertise to provide accurate, 
+                MedAI-UG combines advanced AI algorithms with medical expertise to provide accurate, 
                 data-driven diagnoses and treatment recommendations. Enhance your clinical decision-making today.
               </p>
               <div className="d-flex gap-3 mt-4">
@@ -66,7 +66,7 @@ const Home = () => {
             </Col>
             <Col lg={6} className="text-center" data-aos="fade-left" data-aos-delay="200">
               <div className="hero-image-wrapper">
-                <img src={usingAi} alt="DiagnoseMe AI Platform" className="hero-image" />
+                <img src={usingAi} alt="MedAI-UG AI Platform" className="hero-image" />
               </div>
             </Col>
           </Row>
@@ -94,7 +94,7 @@ const Home = () => {
         <Container>
           <div className="section-header text-center" data-aos="fade-up">
             <span className="section-subtitle">Key Benefits</span>
-            <h2 className="section-title">Why Healthcare Professionals Choose DiagnoseMe</h2>
+            <h2 className="section-title">Why Healthcare Professionals Choose MedAI-UG</h2>
           </div>
           
           <Row className="feature-row align-items-center">
@@ -158,7 +158,7 @@ const Home = () => {
                 </div>
                 <h3 className="feature-title">Enhanced Patient Outcomes</h3>
                 <p className="feature-description">
-                  Build patient trust with more accurate diagnoses and transparent explanations. Our visual reports help patients understand their conditions, leading to better adherence to treatment plans.
+                  Build patient trust with more accurate diagnoses and transparent explanations. Our system helps patients understand their conditions, leading to better adherence to treatment plans.
                 </p>
                 <ul className="feature-list">
                   <li><CheckCircleIcon className="me-2" />Improved patient understanding</li>
@@ -176,7 +176,7 @@ const Home = () => {
         <Container>
           <div className="section-header text-center" data-aos="fade-up">
             <span className="section-subtitle">Simple Process</span>
-            <h2 className="section-title">How DiagnoseMe Works</h2>
+            <h2 className="section-title">How MedAI-UG Works</h2>
             <p className="section-description">
               Our streamlined three-step process integrates seamlessly into your existing workflow
             </p>
@@ -225,7 +225,7 @@ const Home = () => {
           
           <div className="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
             <Button variant="primary" size="lg" className="btn-custom" onClick={handleGetStarted}>
-              Try DiagnoseMe Now <ArrowForwardIcon fontSize="small" />
+              Try MedAI-UG Now <ArrowForwardIcon fontSize="small" />
             </Button>
           </div>
         </Container>
@@ -239,7 +239,7 @@ const Home = () => {
               <div className="cta-content">
                 <h2 className="cta-title">Ready to Transform Your Practice?</h2>
                 <p className="cta-text">
-                  Join thousands of healthcare professionals who have enhanced their diagnostic capabilities with DiagnoseMe.
+                  Join thousands of healthcare professionals who have enhanced their diagnostic capabilities with MedAI-UG.
                 </p>
                 <div className="d-flex justify-content-center gap-3 mt-4">
                   <Button variant="light" size="lg" className="btn-custom-outline-dark" onClick={handleGetStarted} data-aos="zoom-in" data-aos-delay="100">
@@ -261,7 +261,7 @@ const Home = () => {
           <Row className="pb-4">
             <Col lg={4} md={6} className="mb-4" data-aos="fade-right" data-aos-delay="100">
               <div className="footer-brand">
-                <h3 className="footer-logo">DiagnoseMe</h3>
+                <h3 className="footer-logo">MedAI-UG</h3>
                 <p className="footer-description">
                   Revolutionizing healthcare diagnostics with artificial intelligence to provide better patient outcomes.
                 </p>
@@ -294,7 +294,6 @@ const Home = () => {
               <h5 className="footer-heading">Company</h5>
               <ul className="footer-links">
                 <li><a href="#about">About Us</a></li>
-                <li><a href="#careers">Careers</a></li>
                 <li><a href="#blog">Blog</a></li>
                 <li><a href="#contact">Contact</a></li>
               </ul>
@@ -322,7 +321,7 @@ const Home = () => {
           </Row>
           
           <div className="footer-bottom">
-            <p>© {new Date().getFullYear()} DiagnoseMe. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} MedAI-UG. All rights reserved.</p>
           </div>
         </Container>
       </footer>

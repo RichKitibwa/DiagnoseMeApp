@@ -35,6 +35,11 @@ const MyNavbar = ({isAuthenticated, handleLogout, userRole}) => {
     };
   }, []);
 
+  // Close drawer on route change
+  useEffect(() => {
+    setShowDrawer(false);
+  }, [location.pathname]);
+
   // Dynamic navbar classes based on scroll state and current page
   let navbarClasses = 'navbar-custom';
   
@@ -64,8 +69,8 @@ const MyNavbar = ({isAuthenticated, handleLogout, userRole}) => {
           <Navbar.Brand as={Link} to="/" className="brand-logo">
             <LocalHospitalIcon className="brand-icon" />
             <span className="brand-text">
-              <span className="brand-text-diagnose">Diagnose</span>
-              <span className="brand-text-me">Me</span>
+              <span className="brand-text-diagnose">MedAI</span>
+              <span className="brand-text-me">UG</span>
             </span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -79,7 +84,8 @@ const MyNavbar = ({isAuthenticated, handleLogout, userRole}) => {
                   </>
                 ) : userRole === USER_ROLE.DOCTOR ? (
                   <>
-                    <Nav.Link as={Link} to="/pending-reports" className="nav-link-custom">Pending Reports</Nav.Link>
+                    <Nav.Link as={Link} to="/doctor" className="nav-link-custom">Dashboard</Nav.Link>
+                    <Nav.Link as={Link} to="/existing-patients" className="nav-link-custom">Patients</Nav.Link>
                     <LogoutButton handleLogout={handleLogout} />
                   </>
                 ) : null
@@ -95,22 +101,29 @@ const MyNavbar = ({isAuthenticated, handleLogout, userRole}) => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Offcanvas show={showDrawer} onHide={toggleDrawer} className="custom-offcanvas">
+      
+      <Offcanvas 
+        show={showDrawer} 
+        onHide={() => setShowDrawer(false)} 
+        placement="start" 
+        className="custom-offcanvas" 
+        backdrop={true}
+      >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
             <div className="brand-logo-small">
               <LocalHospitalIcon className="brand-icon" />
               <span className="brand-text">
-                <span className="brand-text-diagnose">Diagnose</span>
-                <span className="brand-text-me">Me</span>
+                <span className="brand-text-diagnose">MedAI</span>
+                <span className="brand-text-me">UG</span>
               </span>
             </div>
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           {isAuthenticated && role === USER_ROLE.DOCTOR ?
-            <DoctorSideNav onLinkClick={toggleDrawer}/> : 
-            <PatientSideNav onLinkClick={toggleDrawer}/>}
+            <DoctorSideNav onLinkClick={() => setShowDrawer(false)}/> : 
+            <PatientSideNav onLinkClick={() => setShowDrawer(false)}/>}
         </Offcanvas.Body>
       </Offcanvas>
     </>  
