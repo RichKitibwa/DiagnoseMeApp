@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './auth.css';
 import '../App.css';
-import { Row, Col, Card, Button, Container } from 'react-bootstrap';
+import { Row, Col, Card, Button, Container, Modal } from 'react-bootstrap';
 import usingAi from '../images/using_ai.jpg';
 import saveTime from '../images/save_time.jpg';
 import patietSatisfaction from '../images/patient_satisfaction.jpg';
@@ -24,18 +24,35 @@ import 'aos/dist/aos.css';
 
 const Home = () => {
   const navigate = useNavigate();
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   useEffect(() => {
     AOS.init({
       duration: 800,
-      once: false,
-      mirror: true,
+      once: true,
+      mirror: false,
+      offset: 50,
       easing: 'ease-in-out',
+      disable: 'mobile'
     });
+    
+    // Force update to ensure all sections render properly
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
   }, []);
 
   const handleGetStarted = () => {
     navigate("/login");
+  };
+  
+  const handleWatchDemo = () => {
+    setShowVideoModal(true);
+  };
+
+  const handleCloseVideo = () => {
+    setShowVideoModal(false);
   };
   
   const statsItems = [
@@ -44,11 +61,11 @@ const Home = () => {
   ];
   
   return (
-    <div className='home'>
+    <div className='home' style={{ overflow: 'visible', display: 'block' }}>
       {/* Hero Section */}
       <section className="hero-section">
         <Container>
-          <Row className="align-items-center min-vh-100">
+          <Row className="align-items-center" style={{ minHeight: "90vh" }}>
             <Col lg={6} className="hero-content" data-aos="fade-right" data-aos-delay="100">
               <h1 className="hero-title">Empowering Healthcare with <span className="gradient-text">Intelligent Diagnostics</span></h1>
               <p className="hero-text">
@@ -59,7 +76,7 @@ const Home = () => {
                 <Button variant="primary" size="lg" className="btn-custom" onClick={handleGetStarted} data-aos="zoom-in" data-aos-delay="300">
                   Get Started <ArrowForwardIcon fontSize="small" />
                 </Button>
-                <Button variant="outline-light" size="lg" className="btn-custom-outline" data-aos="zoom-in" data-aos-delay="400">
+                <Button variant="outline-light" size="lg" className="btn-custom-outline" onClick={handleWatchDemo} data-aos="zoom-in" data-aos-delay="400">
                   Watch Demo
                 </Button>
               </div>
@@ -224,7 +241,7 @@ const Home = () => {
           </Row>
           
           <div className="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
-            <Button variant="primary" size="lg" className="btn-custom" onClick={handleGetStarted}>
+            <Button variant="primary" size="lg" className="btn-custom btn-responsive" onClick={handleGetStarted}>
               Try MedAI-UG Now <ArrowForwardIcon fontSize="small" />
             </Button>
           </div>
@@ -242,11 +259,11 @@ const Home = () => {
                   Join thousands of healthcare professionals who have enhanced their diagnostic capabilities with MedAI-UG.
                 </p>
                 <div className="d-flex justify-content-center gap-3 mt-4">
-                  <Button variant="light" size="lg" className="btn-custom-outline-dark" onClick={handleGetStarted} data-aos="zoom-in" data-aos-delay="100">
+                  <Button variant="light" size="lg" className="btn-custom-outline-dark btn-responsive" onClick={handleGetStarted} data-aos="zoom-in" data-aos-delay="100">
                     Start Free Trial
                   </Button>
-                  <Button variant="primary" size="lg" className="btn-custom" onClick={handleGetStarted} data-aos="zoom-in" data-aos-delay="200">
-                    Schedule Demo
+                  <Button variant="outline-light" size="lg" className="btn-custom-outline" onClick={handleWatchDemo} data-aos="zoom-in" data-aos-delay="400">
+                    Watch Demo
                   </Button>
                 </div>
               </div>
@@ -286,7 +303,7 @@ const Home = () => {
               <h5 className="footer-heading">Product</h5>
               <ul className="footer-links">
                 <li><a href="#features">Features</a></li>
-                <li><a href="#demo">Request Demo</a></li>
+                <li><a href="#" onClick={handleWatchDemo}>Watch Demo</a></li>
               </ul>
             </Col>
             
@@ -325,6 +342,21 @@ const Home = () => {
           </div>
         </Container>
       </footer>
+
+      {/* Video Modal */}
+      <Modal show={showVideoModal} onHide={handleCloseVideo} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>MedAI-UG Demo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="ratio ratio-16x9">
+            <video controls controlsList="nodownload">
+              <source src="/videos/medaiug_demo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

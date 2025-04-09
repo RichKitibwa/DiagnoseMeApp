@@ -7,9 +7,7 @@ import { USER_ROLE } from '../utils/Constants';
 import { 
   TextField, 
   Button, 
-  Card, 
   CardContent, 
-  CardHeader, 
   Container, 
   Box,
   InputAdornment,
@@ -65,15 +63,12 @@ const LoginForm = ({ handleLogin }) => {
   };
 
   return (
-    <Box className='login'>
+    <Box className="login">
       <Container maxWidth="sm" className="login-container">
         <Paper elevation={6} className="login-paper">
-          <Box className="login-header">
-            <Typography variant="h5" fontWeight="500">Log in</Typography>
-          </Box>
           <CardContent className="login-content">
             {error && <Alert severity="error" className="login-error">{error}</Alert>}
-            <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit} className="login-form">
               <TextField
                 fullWidth
                 margin="normal"

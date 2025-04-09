@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const LogoutButton = ({ handleLogout }) => {
   const navigate = useNavigate();
@@ -25,10 +26,9 @@ const LogoutButton = ({ handleLogout }) => {
     <Button 
       onClick={handleLogoutClick} 
       variant="outline-danger" 
-      size="sm" 
-      className="nav-link-custom"
+      className="logout-btn nav-link-custom"
     >
-      Logout
+      <LogoutIcon /> <span>Logout</span>
     </Button>
   );
 };

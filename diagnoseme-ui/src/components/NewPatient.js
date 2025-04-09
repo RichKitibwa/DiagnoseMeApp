@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { format } from 'date-fns';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import DoctorSideNav from "./DoctorSideNav";
 import { USER_ROLE } from '../utils/Constants';
 import '../App.css';
 import { 
@@ -133,9 +132,6 @@ function NewPatient() {
 
     return (
         <div className="new-patient-container">
-            <div className="new-patient-sidebar">
-                <DoctorSideNav />
-            </div>
             <Container 
                 component="main" 
                 maxWidth="md" 
@@ -145,7 +141,7 @@ function NewPatient() {
                     elevation={3} 
                     className="new-patient-form-container"
                 >
-                    <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 500 }}>
+                    <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 500, textAlign: 'center' }}>
                         Add New Patient Information
                     </Typography>
                     

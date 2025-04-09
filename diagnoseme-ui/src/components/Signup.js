@@ -86,12 +86,10 @@ const Signup = () => {
     <Box className='register'>
       <Container maxWidth="sm" className="signup-container">
         <Paper elevation={6} className="signup-paper">
-          <Box className="signup-header">
-            <Typography variant="h5" fontWeight="500">Sign Up</Typography>
-          </Box>
+         
           <Box className="signup-content">
             {error && <Alert severity="error" className="signup-error">{error}</Alert>}
-            <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Box component="form" onSubmit={handleSubmit} noValidate className="signup-form">
               <TextField
                 fullWidth
                 margin="normal"
@@ -204,10 +202,11 @@ const Signup = () => {
                         </InputAdornment>
                       ),
                     }}
+                    className="signup-form-field"
                   />
                 </Box>
               )}
-
+              
               <TextField
                 fullWidth
                 margin="normal"
@@ -237,16 +236,15 @@ const Signup = () => {
                 }}
                 className="signup-password-field"
               />
-
+              
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
-                size="large"
                 disabled={isLoading}
-                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                 className="signup-button"
+                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
               >
                 {isLoading ? 'Signing up...' : 'Sign Up'}
               </Button>
@@ -254,7 +252,7 @@ const Signup = () => {
           </Box>
         </Paper>
       </Container>
-    </Box>  
+    </Box>
   );
 };
 

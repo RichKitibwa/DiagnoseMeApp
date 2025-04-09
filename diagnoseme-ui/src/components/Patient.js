@@ -7,7 +7,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import SendIcon from "@mui/icons-material/Send";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { Col, Container, Row } from 'react-bootstrap';
-import DoctorSideNav from './DoctorSideNav';
 import formatResponse from '../utils/formatResponse';
 import '../App.css';
 
@@ -86,10 +85,7 @@ const Patient = () => {
     return (
         <Container fluid className="view-container">
              <Row>
-                <Col md={3} lg={2} className="d-none d-lg-block sidebar">
-                    <DoctorSideNav />
-                </Col>
-                <Col md={9} lg={10} className="">
+                <Col>
                     <Box className="patient-details-container">
                         <Card variant="outlined" className="patient-card">
                             <CardContent>

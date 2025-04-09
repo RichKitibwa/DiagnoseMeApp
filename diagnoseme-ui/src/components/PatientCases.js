@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Row, Col, Container, Table, Button } from 'react-bootstrap';
-import DoctorSideNav from "./DoctorSideNav";
 import { formatDate } from "../utils/FormatDate";
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
@@ -38,10 +37,7 @@ const PatientCases = () => {
     return (
         <Container fluid className="view-container">
             <Row>
-                <Col md={3} lg={2} className="d-none d-lg-block sidebar">
-                    <DoctorSideNav />
-                </Col>
-                <Col md={9} lg={10}>
+                <Col>
                     <h2 className="my-4">Patient Cases</h2>
                     {cases.length > 0 ? (
                         <Table striped bordered hover>

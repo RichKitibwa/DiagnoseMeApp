@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Row, Col, Card, Form, Button, Tab, Tabs } from 'react-bootstrap';
-import DoctorSideNav from './DoctorSideNav';
 import '../App.css';
 import { formatDate } from '../utils/FormatDate';
 
 const CaseDetailView = () => {
     const { caseId } = useParams();
-    const navigate = useNavigate();
     const [caseDetails, setCaseDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -48,11 +46,7 @@ const CaseDetailView = () => {
     return (
         <Container fluid className="view-container">
             <Row>
-                <Col md={3} lg={2} className="d-none d-lg-block sidebar">
-                    <DoctorSideNav />
-                </Col>
-
-                <Col md={9} lg={10}>
+                <Col>
                     <h1 className="my-4">Case Details: {caseDetails.patientName}</h1>
                     <Card className="mb-3">
                         <Card.Body>

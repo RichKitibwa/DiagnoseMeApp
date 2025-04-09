@@ -5,7 +5,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
-import DoctorSideNav from './DoctorSideNav';
 import '../App.css';
 import { Col, Row, Container, Table, InputGroup, FormControl } from 'react-bootstrap';
 import { formatDate } from '../utils/FormatDate';
@@ -58,10 +57,7 @@ const ExisitingPatients = () => {
     return (
         <Container fluid className="view-container">
             <Row>
-                <Col md={3} lg={2} className="d-none d-lg-block sidebar">
-                    <DoctorSideNav />
-                </Col>
-                <Col md={9} lg={10}>
+                <Col>
                     <h2 className="my-4">Patients</h2>
                     <div className="d-flex justify-content-end mb-3">
                         <InputGroup className="mb-3 search-patient patient-search">

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import DoctorSideNav from './DoctorSideNav';
-import { Row, Col, Card, Button, Container } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import '../App.css';
 
 const DoctorHome = () => {
@@ -60,10 +59,7 @@ const DoctorHome = () => {
   return (
     <Container fluid className="view-container">
         <Row className="gx-0">
-            <Col xs={12} md={4} lg={2} className="d-none d-lg-block sidebar">
-                <DoctorSideNav />
-            </Col>
-            <Col xs={12} md={8} lg={10} className="px-md-4 welcome-doctor">
+            <Col className="px-md-4 welcome-doctor">
               <div className="welcome-section">
                 <div className="doctor-home-content">
                   <h2>Welcome, Doctor!</h2>
